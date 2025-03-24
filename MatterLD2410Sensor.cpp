@@ -1,17 +1,3 @@
-// Copyright 2024 Espressif Systems (Shanghai) PTE LTD
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 #include <sdkconfig.h>
 #ifdef CONFIG_ESP_MATTER_ENABLE_DATA_MODEL
 
@@ -22,6 +8,8 @@
 using namespace esp_matter;
 using namespace esp_matter::endpoint;
 using namespace chip::app::Clusters;
+
+#define DEFAULT_BRIGHTNESS 64
 
 // clang-format off
 const uint8_t MatterLD2410Sensor::occupancySensorTypeBitmap[4] = {
@@ -57,19 +45,36 @@ bool MatterLD2410Sensor::begin(bool _occupancyState, byte _illuminanceMeasuredVa
     return false;
   }
 
+  // // Basic node configuration
+  // root_node::config_t node_config;
+  // char node_label[33] = "NervousLD2410";
+  // strcpy(node_config.basic_information.node_label, node_label);
+
+  // // endpoint handles can be used to add/modify clusters.
+  // endpoint_t *endpointSensor = root_node::create(node::get(), &node_config, ENDPOINT_FLAG_NONE, (void *)this);
+  // if (endpointSensor == nullptr) {
+  //   log_e("Failed to create node endpoint");
+  //   return false;
+  // }
+  // setEndPointId(endpoint::get_id(endpointSensor));
+  // log_i("Occupancy Sensor created with endpoint_id %d", getEndPointId());
+
   // Occupancy config
   occupancy_sensor::config_t occupancy_sensor_config;
   occupancy_sensor_config.occupancy_sensing.occupancy = _occupancyState;
   occupancy_sensor_config.occupancy_sensing.occupancy_sensor_type = OCCUPANCY_SENSOR_TYPE_PIR;
   occupancy_sensor_config.occupancy_sensing.occupancy_sensor_type_bitmap = occupancySensorTypeBitmap[OCCUPANCY_SENSOR_TYPE_PIR];
 
+  occupancyState = _occupancyState;
+  // esp_err_t esperrOcc = occupancy_sensor::add(endpointSensor, &occupancy_sensor_config);
+  // log_i("Occupancy Sensor created with endpoint_id %d", getEndPointId());
+
   // endpoint handles can be used to add/modify clusters.
   endpoint_t *endpointSensor = occupancy_sensor::create(node::get(), &occupancy_sensor_config, ENDPOINT_FLAG_NONE, (void *)this);
   if (endpointSensor == nullptr) {
-    log_e("Failed to create Occupancy Sensor endpoint");
+    log_e("Failed to create occupancy endpoint");
     return false;
   }
-  occupancyState = _occupancyState;
   setEndPointId(endpoint::get_id(endpointSensor));
   log_i("Occupancy Sensor created with endpoint_id %d", getEndPointId());
 
@@ -84,13 +89,23 @@ bool MatterLD2410Sensor::begin(bool _occupancyState, byte _illuminanceMeasuredVa
 
   // Add illuminance config to the same endpoint as occupancy 
   // (not working when creating another endpoint)
-  esp_err_t esperr = light_sensor::add(endpointSensor, &illuminance_config);
-  if (esperr != ESP_OK) {
+  esp_err_t esperrIll = light_sensor::add(endpointSensor, &illuminance_config);
+  if (esperrIll != ESP_OK) {
     log_e("Failed to add light sensor to endpoint");
     return false;
   }
   illuminanceMeasuredValue = _illuminanceMeasuredValue;
   log_i("Light sensor created with endpoint_id %d", getEndPointId());
+
+  // // Radar Timeout config
+  // laundry_dryer::config_t radar_timeout_config;
+  // radar_timeout_config.laundry_dryer_controls.selected_dryness_level = DEFAULT_BRIGHTNESS;
+  // esp_err_t esperrRT = laundry_dryer::add(endpointSensor, &radar_timeout_config);
+  // if (esperrRT != ESP_OK) {
+  //   log_e("Failed to add radar timeout to endpoint");
+  //   return false;
+  // }
+  // log_i("Radar timeout created with endpoint_id %d", getEndPointId());
 
   started = true;
   return true;
@@ -139,9 +154,9 @@ bool MatterLD2410Sensor::setIlluminance(byte _illuminanceMeasuredValue) {
   }
 
   // avoid processing if there was no change
-  if (illuminanceMeasuredValue == _illuminanceMeasuredValue) {
-    return true;
-  }
+  // if (illuminanceMeasuredValue == _illuminanceMeasuredValue) {
+  //   return true;
+  // }
 
   esp_matter_attr_val_t illuminanceVal = esp_matter_invalid(NULL);
 

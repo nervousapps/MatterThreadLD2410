@@ -25,27 +25,7 @@
   Arduino/ESP32 GND -- GND LD2410
   Provide sufficient power to the sensor Vcc (200mA, 5-12V) 
 */
-// #if defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_LEONARDO)
-// //ARDUINO_SAMD_NANO_33_IOT RX_PIN is D1, TX_PIN is D0 
-// //ARDUINO_AVR_LEONARDO RX_PIN(RXI) is D0, TX_PIN(TXO) is D1 
-// #define sensorSerial Serial1
-// #elif defined(ARDUINO_XIAO_ESP32C3) || defined(ARDUINO_XIAO_ESP32C6)
-// //RX_PIN is D7, TX_PIN is D6
-// #define sensorSerial Serial0
-// #elif defined(ESP32)
-// //Other ESP32 device - choose available GPIO pins
 #define sensorSerial Serial1
-// #if defined(ARDUINO_ESP32S3_DEV)
-// #define RX_PIN 18
-// #define TX_PIN 17
-// #else
-
-// #endif
-// #else
-// #error "This sketch only works on ESP32, Arduino Nano 33IoT, and Arduino Leonardo (Pro-Micro)"
-// #endif
-
-
 
 // User defines
 // #define DEBUG_MODE
@@ -68,66 +48,7 @@ byte lightLevel = 0;
 
 unsigned long nextPrint = 0, printEvery = 1000;  // print every second
 
-void printValue(const byte &val) {
-  Serial.print(' ');
-  Serial.print(val);
-}
-
-void printData() {
-  Serial.print(sensor.statusString());
-  if (sensor.presenceDetected()) {
-    presenceDetected = true;
-    Serial.print(", distance: ");
-    Serial.print(sensor.detectedDistance());
-    Serial.print("cm");
-  } else {
-    presenceDetected = false;
-  }
-  Serial.println();
-  if (sensor.movingTargetDetected()) {
-    Serial.print(" MOVING    = ");
-    Serial.print(sensor.movingTargetSignal());
-    Serial.print("@");
-    Serial.print(sensor.movingTargetDistance());
-    Serial.print("cm ");
-    if (sensor.inEnhancedMode()) {
-      Serial.print("\n signals->[");
-      sensor.getMovingSignals().forEach(printValue);
-      Serial.print(" ] thresholds:[");
-      sensor.getMovingThresholds().forEach(printValue);
-      Serial.print(" ]");
-    }
-    Serial.println();
-  }
-  if (sensor.stationaryTargetDetected()) {
-    Serial.print(" STATIONARY= ");
-    Serial.print(sensor.stationaryTargetSignal());
-    Serial.print("@");
-    Serial.print(sensor.stationaryTargetDistance());
-    Serial.print("cm ");
-    if (sensor.inEnhancedMode()) {
-      Serial.print("\n signals->[");
-      sensor.getStationarySignals().forEach(printValue);
-      Serial.print(" ] thresholds:[");
-      sensor.getStationaryThresholds().forEach(printValue);
-      Serial.print(" ]");
-    }
-    Serial.println();
-  }
-  lightLevel = sensor.getLightLevel();
-  if (lightLevel) {
-    Serial.print("Light level: ");
-    Serial.println(lightLevel);
-  }
-  Serial.println();
-}
-
 void setupLD2410() {
-// #if defined(ARDUINO_XIAO_ESP32C3) || defined(ARDUINO_XIAO_ESP32C6) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_LEONARDO)
-//   sensorSerial.begin(LD2410_BAUD_RATE);
-// #else
-//   sensorSerial.begin(LD2410_BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
-// #endif
   sensorSerial.begin(LD2410_BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
   delay(2000);
   Serial.println(__FILE__);
@@ -142,6 +63,8 @@ void setupLD2410() {
   sensor.enhancedMode(false);
 #endif
 
+sensor.setNoOneWindow(5);
+
   delay(nextPrint);
 }
 
@@ -149,8 +72,12 @@ bool getPresenceDetected() {
   return presenceDetected;
 }
 
-byte getLightLevel() {
+unsigned short int getLightLevel() {
   return lightLevel;
+}
+
+bool setRadarTimeout(byte timeout) {
+  return sensor.setNoOneWindow(timeout);
 }
 
 void loopLD2410() {

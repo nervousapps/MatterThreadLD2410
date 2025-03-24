@@ -17,7 +17,7 @@ Matter over Thread LD2410 sensor
   - [Features](#features)
 - [:pinched_fingers: Requirements](#pinched_fingers-requirements)
 - [:surfing_woman: Installation](#surfing_woman-installation)
-- [:unicorn: ESP32 boards](#unicorn-esp32-boards)
+- [:snowboarder: ESP32 boards](#snowboarder-esp32-boards)
 - [:unicorn: Build it](#unicorn-build-it)
   - [:books: Config](#books-config)
 - [:point_right: Commission device](#point_right-commission-device)
@@ -38,12 +38,14 @@ Matter device over Thread implementation for LD2410 sensor.
 
 ## :pinched_fingers: Requirements
 
-- Arduino IDE
+- Arduino IDE 2.x
 
 ## :surfing_woman: Installation
-Follow the installation guide described here [Installation guide]()
+Follow the installation guide described here [Installation guide](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html)
 
-## :unicorn: ESP32 boards
+:warning: Do not forget to do the post installation step with the '''python get.py''' script [here](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#debian-ubuntu)
+
+## :snowboarder: ESP32 boards
 - C6 (tested)
 - H2 (not tested)
 
