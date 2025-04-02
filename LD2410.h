@@ -72,7 +72,7 @@ bool getPresenceDetected() {
   return presenceDetected;
 }
 
-unsigned short int getLightLevel() {
+byte getLightLevel() {
   return lightLevel;
 }
 

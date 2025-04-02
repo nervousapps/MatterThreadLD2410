@@ -186,6 +186,8 @@ void loop() {
       Serial.println(LD2410Sensor.getOccupancy());
       Serial.print("Sensor : ");
       Serial.println(getPresenceDetected());
+    }
+    if(getLightLevel() != LD2410Sensor.getIlluminance()) {
       Serial.print("Lightlevel : ");
       Serial.println(getLightLevel());
     }

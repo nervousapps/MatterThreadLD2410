@@ -27,7 +27,7 @@ bool MatterLD2410Sensor::attributeChangeCB(uint16_t endpoint_id, uint32_t cluste
     return false;
   }
 
-  log_d("Occupancy Sensor Attr update callback: endpoint: %u, cluster: %u, attribute: %u, val: %u", endpoint_id, cluster_id, attribute_id, val->val.u32);
+  log_i("Occupancy Sensor Attr update callback: endpoint: %u, cluster: %u, attribute: %u, val: %u", endpoint_id, cluster_id, attribute_id, val->val.u32);
   return ret;
 }
 
@@ -46,6 +46,7 @@ bool MatterLD2410Sensor::begin(bool _occupancyState, byte _illuminanceMeasuredVa
   }
 
   // // Basic node configuration
+  // deviceNode.
   // root_node::config_t node_config;
   // char node_label[33] = "NervousLD2410";
   // strcpy(node_config.basic_information.node_label, node_label);
@@ -157,6 +158,8 @@ bool MatterLD2410Sensor::setIlluminance(byte _illuminanceMeasuredValue) {
   // if (illuminanceMeasuredValue == _illuminanceMeasuredValue) {
   //   return true;
   // }
+
+  log_i("Illuminance Sensor Attribute.");
 
   esp_matter_attr_val_t illuminanceVal = esp_matter_invalid(NULL);
 
