@@ -46,7 +46,7 @@ MyLD2410 sensor(sensorSerial);
 bool presenceDetected = false;
 byte lightLevel = 0;
 
-unsigned long nextPrint = 0, printEvery = 1000;  // print every second
+unsigned long nextPrint = 0, printEvery = 10;  // print every second
 
 void setupLD2410() {
   sensorSerial.begin(LD2410_BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
@@ -83,7 +83,6 @@ bool setRadarTimeout(byte timeout) {
 void loopLD2410() {
   if ((sensor.check() == MyLD2410::Response::DATA) && (millis() > nextPrint)) {
     nextPrint = millis() + printEvery;
-    // printData();
     if (sensor.presenceDetected()) {
       presenceDetected = true;
     } else {

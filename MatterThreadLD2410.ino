@@ -180,19 +180,18 @@ void loop() {
       button_time_stamp = millis();  // avoid running decommissining again, reboot takes a second or so
     }
 
-    // Check Simulated Occupancy Sensor and set Matter Attribute
+    // Check Occupancy Sensor and set Matter Attribute
     if(getPresenceDetected() != LD2410Sensor.getOccupancy()){
-      Serial.print("LD2410 : ");
-      Serial.println(LD2410Sensor.getOccupancy());
-      Serial.print("Sensor : ");
+      Serial.print("Occupancy Sensor : ");
       Serial.println(getPresenceDetected());
+      LD2410Sensor.setOccupancy(getPresenceDetected());
     }
+    // Check Illuminance Sensor and set Matter Attribute
     if(getLightLevel() != LD2410Sensor.getIlluminance()) {
-      Serial.print("Lightlevel : ");
+      Serial.print("Light level : ");
       Serial.println(getLightLevel());
+      LD2410Sensor.setIlluminance((float)getLightLevel()*100.00);
     }
-    LD2410Sensor.setOccupancy(getPresenceDetected());
-    LD2410Sensor.setIlluminance(getLightLevel());
 
     CHECK_OCCUPANCY_SENSOR = 0;
   }

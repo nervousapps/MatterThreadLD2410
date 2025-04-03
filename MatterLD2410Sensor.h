@@ -44,17 +44,17 @@ public:
   }
 
   // set the illuminance state
-  bool setIlluminance(byte _illuminanceMeasuredValue);
-  byte getIlluminance() {
+  bool setIlluminance(uint16_t _illuminanceMeasuredValue);
+  uint16_t getIlluminance() {
     return illuminanceMeasuredValue;
   }
 
   // bool conversion operator
-  void operator=(byte _illuminanceMeasuredValue) {
+  void operator=(uint16_t _illuminanceMeasuredValue) {
     setIlluminance(_illuminanceMeasuredValue);
   }
   // byte conversion operator
-  operator byte() {
+  operator uint16_t() {
     return getIlluminance();
   }
 
@@ -73,6 +73,6 @@ protected:
   bool started = false;
   bool occupancyState = false;
 
-  byte illuminanceMeasuredValue = 0;
+  uint16_t illuminanceMeasuredValue = 0;
 };
 #endif /* CONFIG_ESP_MATTER_ENABLE_DATA_MODEL */

@@ -80,14 +80,10 @@ bool MatterLD2410Sensor::begin(bool _occupancyState, byte _illuminanceMeasuredVa
   log_i("Occupancy Sensor created with endpoint_id %d", getEndPointId());
 
   // Illuminance config
-  unsigned short int illuminance_min_measured_value = 0;
-  unsigned short int illuminance_max_measured_value = 255;
-
   light_sensor::config_t illuminance_config;
   illuminance_config.illuminance_measurement.illuminance_measured_value = _illuminanceMeasuredValue;
-  illuminance_config.illuminance_measurement.illuminance_min_measured_value = illuminance_min_measured_value;
-  illuminance_config.illuminance_measurement.illuminance_max_measured_value = illuminance_max_measured_value;
-
+  illuminance_config.illuminance_measurement.illuminance_min_measured_value = nullptr;
+  illuminance_config.illuminance_measurement.illuminance_max_measured_value = nullptr;
   // Add illuminance config to the same endpoint as occupancy 
   // (not working when creating another endpoint)
   esp_err_t esperrIll = light_sensor::add(endpointSensor, &illuminance_config);
@@ -97,16 +93,6 @@ bool MatterLD2410Sensor::begin(bool _occupancyState, byte _illuminanceMeasuredVa
   }
   illuminanceMeasuredValue = _illuminanceMeasuredValue;
   log_i("Light sensor created with endpoint_id %d", getEndPointId());
-
-  // // Radar Timeout config
-  // laundry_dryer::config_t radar_timeout_config;
-  // radar_timeout_config.laundry_dryer_controls.selected_dryness_level = DEFAULT_BRIGHTNESS;
-  // esp_err_t esperrRT = laundry_dryer::add(endpointSensor, &radar_timeout_config);
-  // if (esperrRT != ESP_OK) {
-  //   log_e("Failed to add radar timeout to endpoint");
-  //   return false;
-  // }
-  // log_i("Radar timeout created with endpoint_id %d", getEndPointId());
 
   started = true;
   return true;
@@ -143,23 +129,21 @@ bool MatterLD2410Sensor::setOccupancy(bool _occupancyState) {
     }
     occupancyState = _occupancyState;
   }
-  log_v("Occupancy Sensor set to %s", _occupancyState ? "Occupied" : "Vacant");
+  log_i("Occupancy Sensor set to %s", _occupancyState ? "Occupied" : "Vacant");
 
   return true;
 }
 
-bool MatterLD2410Sensor::setIlluminance(byte _illuminanceMeasuredValue) {
+bool MatterLD2410Sensor::setIlluminance(uint16_t _illuminanceMeasuredValue) {
   if (!started) {
     log_e("Matter Illuminance Sensor device has not begun.");
     return false;
   }
 
   // avoid processing if there was no change
-  // if (illuminanceMeasuredValue == _illuminanceMeasuredValue) {
-  //   return true;
-  // }
-
-  log_i("Illuminance Sensor Attribute.");
+  if (illuminanceMeasuredValue == _illuminanceMeasuredValue) {
+    return true;
+  }
 
   esp_matter_attr_val_t illuminanceVal = esp_matter_invalid(NULL);
 
@@ -167,8 +151,9 @@ bool MatterLD2410Sensor::setIlluminance(byte _illuminanceMeasuredValue) {
     log_e("Failed to get Illuminance Sensor Attribute.");
     return false;
   }
-  if (illuminanceVal.val.u8 != _illuminanceMeasuredValue) {
-    illuminanceVal.val.u8 = _illuminanceMeasuredValue;
+
+  if (illuminanceVal.val.u16 != _illuminanceMeasuredValue) {
+    illuminanceVal.val.u16 = _illuminanceMeasuredValue;
     bool ret;
     ret = updateAttributeVal(IlluminanceMeasurement::Id, IlluminanceMeasurement::Attributes::MeasuredValue::Id, &illuminanceVal);
     if (!ret) {
@@ -177,7 +162,7 @@ bool MatterLD2410Sensor::setIlluminance(byte _illuminanceMeasuredValue) {
     }
     illuminanceMeasuredValue = _illuminanceMeasuredValue;
   }
-  log_v("Illuminance Sensor set to %d", _illuminanceMeasuredValue);
+  log_d("Illuminance Sensor set to %0.2f", illuminanceVal.val.u16);
 
   return true;
 }

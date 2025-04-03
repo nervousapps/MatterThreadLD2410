@@ -1,13 +1,11 @@
 <h1 align="center">
 Matter over Thread LD2410 sensor 
 </h1>
-<!-- <h1 align="center">
-<img width="200" style="border-radius: 100%" src="https://raw.githubusercontent.com/nervousapps/AutoChaos/main/logo.png" alt="AutoChaos">
-</h1> -->
 
 [![License: MIT](https://img.shields.io/badge/License-Apache_2.0-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Arduino](https://img.shields.io/badge/Arduino-cpp-green.svg)](https://www.openai.com)
 [![Arduino-esp32](https://img.shields.io/badge/Arduino-esp32-blue.svg)](https://www.openai.com)
+[![Matter-Thread](https://img.shields.io/badge/Matter-Thread-pink.svg)](https://handbook.buildwithmatter.com/)
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -33,6 +31,7 @@ Matter over Thread LD2410 sensor
 Matter device over Thread implementation for LD2410 sensor.
 
 ### Features
+- Light (onboard LED)
 - Occupancy
 - Illuminance
 
